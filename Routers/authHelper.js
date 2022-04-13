@@ -1,7 +1,6 @@
-//   let flag=false; // user logged in or not 
-const jwt=require('jsonwebtoken');
-const {JWT_KEY}=require('../secrets');
+const jwt = require("jsonwebtoken");
+const jwt_key = require("D:\\learning web development\\backend\\secret.js");
 
 
 
-  module.exports=protectRoute;
+module.exports = protectRoute;

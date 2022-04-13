@@ -1,114 +1,129 @@
 const userModel = require("../models/userModel");
 
 module.exports.getUser = async function getUser(req, res) {
-  // console.log('getUser called');
-  let id = req.id;
-  console.log(id);
-  console.log(req.id);
-  let user = await userModel.findById(id);
-  if (user) {
-    return res.json(user);
-  } else {
-    return res.json({
-      message: "user not found",
+  // let allUsers = await userModel.find();
+  try {
+    let id = req.id;
+    console.log(id);
+    let oneUser = await userModel.findById(id);
+    if (oneUser) {
+      return res.json({ oneUser });
+    } else {
+      return res.json({
+        message: "Please Login",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error.message,
     });
   }
 };
-
-module.exports.updateUser = async function updateUser(req, res) {
-  console.log("req.body-> ", req.body);
-  //update data in users obj
+// module.exports.postUser = function postUser(req, res) {
+//   console.log(req.body);
+//   users = req.body;
+//   //   console.log(users);
+//   res.json({
+//     message: "data received successfully",
+//     users: req.body,
+//   });
+// }
+module.exports.patchUser = async function patchUser(req, res) {
   try {
+    // console.log(req.body);
+    //update data in users obj
     let id = req.params.id;
-    console.log(id);
     let user = await userModel.findById(id);
-    console.log(user);
     let dataToBeUpdated = req.body;
     if (user) {
-      console.log('inside user');
       const keys = [];
       for (let key in dataToBeUpdated) {
-        console.log(key);
         keys.push(key);
       }
-
       for (let i = 0; i < keys.length; i++) {
-        console.log(keys[i]);
         user[keys[i]] = dataToBeUpdated[keys[i]];
       }
-      console.log(user);
-      user.confirmPassword=user.password;
-      const updatedData = await user.save();
-      console.log(updatedData);
-      res.json({
+      user['confirmPassword'] = user['password'];
+      const updated = await user.save();
+
+
+      return res.json({
         message: "data updated successfully",
-        data: updatedData,
+        data: user,
       });
     } else {
       res.json({
         message: "user not found",
       });
     }
-  } catch (err) {
+  }  catch (err) {
+    // console.log(err.message)
     res.json({
       message: err.message,
     });
   }
 };
-
 module.exports.deleteUser = async function deleteUser(req, res) {
-  // users = {};
-  try{
-  let id=req.params.id;
-  let user = await userModel.findByIdAndDelete(id);
-  if(!user){
+  try {
+    let id = req.params.id;
+    // let userToBeDeleted = req.body;
+    let user = await userModel.findByIdAndDelete(id);
+    if (!user) {
+      res.json({
+        message: "user has not found",
+      });
+    }
     res.json({
-      message:'user not found'
-    })
-  }
-  res.json({
-    message: "data has been deleted",
-    data: user,
-  });
-}
-catch(err){
-  res.json({
-    message:err.message
-  });
-}
-};
-
-module.exports.getAllUser = async function getAllUser(req, res) {
-  try{
-  let users=await userModel.find();
-  if(users){
+      message: "user has been deleted",
+      data: user,
+    });
+  } catch (error) {
     res.json({
-      message:'users retrieved',
-      data:users
+      message: error.message,
     });
   }
-}
-catch(err){
-  res.json({message:err.message})
-}
 };
 
+module.exports.getAllUser = async function getuserId(req, res) {
+  try {
+    let users = await userModel.find();
+    if (users) {
+      res.json({
+        message: "users retreived",
+        data: users,
+      });
+    } else {
+      res.json({
+        message: "no users found",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error.message,
+    });
+  }
+};
 
-module.exports.updateProfileImage=function updateProfileImage(req,res){
-  res.json({
-    message:'file uploaded succesfully'
-  });
+module.exports.updateProfileImage= function updateProfileImage(req,res){
+  return res.json({
+    message: 'file uploaded successfully'
+  })
 }
 
-//   function setCookies(req,res){
-//     // res.setHeader('Set-Cookie','isLoggedIn=true');
-//     res.cookie('isLoggedIn',true,{maxAge:1000*60*60*24, secure:true, httpOnly:true});
-//     res.cookie('isPrimeMember',true);
-//     res.send('cookies has been set ');
-//   }
+// function setCookies(req, res) {
+//   // res.setHeader("Set-Cookie","isLoggedIn=true");
+//   res.cookie("isLoggedIn", true, {
+//     maxAge: 1000 * 60 * 60 * 24,
+//     secure: true,
+//     httpOnly: true,
+//   });
+//   res.cookie("isPrimeMemeber", true);
 
-//   function getCookies(req,res){
-//     let cookies=req.cookies.isLoggedIn;
-//     console.log(cookies);
-//     res.send('cookies received');
-//   }
+//   res.send("cookies has been set ");
+// }
+
+// function getCookies(req, res) {
+//   let cookies = req.cookies.isPrimeMemeber;
+//   console.log(cookies);
+//   res.send("cookies has been received");
+// }

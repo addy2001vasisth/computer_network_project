@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const db_link =
-"mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  "mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+
 mongoose
   .connect(db_link)
   .then(function (db) {
-    // console.log(db);
     console.log("review db connected");
   })
   .catch(function (err) {
@@ -34,10 +34,10 @@ const reviewSchema = new mongoose.Schema({
   plan: {
     type: mongoose.Schema.ObjectId,
     ref: "planModel",
-    required: [true, "review must belong to a plan"],
+    required: [true, "review must belong to a plan "],
   },
 });
-//find findById, findOne
+
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
@@ -45,7 +45,5 @@ reviewSchema.pre(/^find/, function (next) {
   }).populate("plan");
   next();
 });
-
 const reviewModel = mongoose.model("reviewModel", reviewSchema);
-
 module.exports = reviewModel;

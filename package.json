@@ -2,10 +2,10 @@
   "name": "Backend",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "method.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node method.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

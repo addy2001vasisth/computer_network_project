@@ -1,11 +1,11 @@
-//mongoose ke through connet mongodb
+// mongoose
+
 const mongoose = require("mongoose");
 const db_link =
-"mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  "mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 mongoose
   .connect(db_link)
   .then(function (db) {
-    // console.log(db);
     console.log("plan db connected");
   })
   .catch(function (err) {
@@ -17,7 +17,7 @@ const planSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    maxlength: [20, "plan name should not exceed more than 20 characters"],
+    maxlength: [20,'plan name should not exceed more than 20 characters']
   },
   duration: {
     type: Number,
@@ -25,37 +25,41 @@ const planSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: [true, "price not entered"],
+    required: [true,'price not enter']
   },
   ratingsAverage: {
     type: Number,
+    default: 0
   },
   discount: {
     type: Number,
-    validate: [
-      function () {
-        return this.discount < 100;
-      },
-      "dicount should not exceed price",
-    ],
+    validate: [function () {
+      this.discount < 100;
+    },'discount should not exceed price']
+
   },
+  noOfReview:{
+    type : Number,
+    default: 0
+  }
+
 });
+const planModel = mongoose.model("planModel",planSchema);
 
-// model
-const planModel = mongoose.model("planModel", planSchema);
-
-// (async function createPlan() {
-//   let planObj = {
-//     name: "SuperFood10",
-//     duration: 30,
-//     price: 1000,
-//     ratingsAverage: 5,
-//     discount: 20,
-//   };
-//   // let data= await planModel.create(planObj);
-//   // console.log(data);
-//   const doc = new planModel(planObj);
-//   await doc.save();
+// (async function createPlane(){
+//     let planObj = {
+//         name:'SuperFood110',
+//         duration:30,
+//         price:1000,
+//         ratingsAverage:5,
+//         discount:20
+//     }
+//     const doc = new planModel(planObj);
+//     await doc.save();
+//     // let data = await planModel.create(planObj);
+//     // console.log(data);
 // })();
 
+
 module.exports = planModel;
+

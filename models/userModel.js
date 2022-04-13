@@ -1,14 +1,13 @@
-//mongoDB
-const mongoose = require("mongoose");
 const emailValidator = require("email-validator");
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const db_link =
   "mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const crypto = require("crypto-js")
+
 mongoose
   .connect(db_link)
   .then(function (db) {
-    // console.log(db);
     console.log("user db connected");
   })
   .catch(function (err) {
@@ -41,55 +40,58 @@ const userSchema = mongoose.Schema({
       return this.confirmPassword == this.password;
     },
   },
-  role: {
-    type: String,
-    enum: ["admin", "user", "restaurantowner", "deliveryboy"],
-    default: "user",
+  role:{
+    type: String, 
+    enum: ['admin','user','restaurantOwner','delieveryBoy'],
+    default: 'user'
   },
-  profileImage: {
+  profileImage:{
     type: String,
-    default: "../Images/UserIcon.png",
+    default: 'img/users/default.jpeg'
   },
-  resetToken: String,
+  resetToken:String
 });
-//pre post hooks
-//after save event occurs in db
-// userSchema.post('save',function(doc){
-//   console.log('after saving in db',doc);
-// });
 
-// //beofre save event occurs in db
-// userSchema.pre('save',function(){
-//   console.log('before saving in db',this);
-// });
+//model
 
-//remove - explore on own
+// (async function createUser() {
+//   let user = {
+//     name: "aditya shamra",
+//     email: "abcd@gmail.com",
+//     password: "12345678",
+//     confirmPassword: "12345678",
+//   };
+//   let data = await userModel.create(user);
+//   console.log(data);
+// })();
 
 userSchema.pre("save", function () {
+  // console.log("before saving in db", this);
   this.confirmPassword = undefined;
 });
+// userSchema.post("save", function (doc) {
+//   console.log("after s aving in db", doc);
+// });
+//  userSchema.pre("save", async function () {
+//   let salt = await bcrypt.genSalt();
+//   let hashedString = await bcrypt.hash(this.password,salt);
+//   console.log(hashedString);
+//   this.password = hashedString;
+  
+// });
 
-// userSchema.pre('save',async function(){
-//     let salt=await bcrypt.genSalt();
-//     let hashedString=await bcrypt.hash(this.password,salt);
-//     this.password=hashedString;
-// })
-
-userSchema.methods.createResetToken = function () {
-  //creating unique token using npm i crypto
-  const resetToken = crypto.randomBytes(32).toString("hex");
+userSchema.methods.createResetToken = function(){
+  const resetToken = crypto.randomBytes(32).toString('hex');
   this.resetToken = resetToken;
   return resetToken;
-};
+}
 
-userSchema.methods.resetPasswordHandler = function (password, confirmPassword) {
+
+userSchema.methods.resetPasswordHandler = function(password,confirmPassword){
   this.password = password;
   this.confirmPassword = confirmPassword;
   this.resetToken = undefined;
-};
+}
 
-// model
 const userModel = mongoose.model("userModel", userSchema);
 module.exports = userModel;
-
-// (async function createUser(){

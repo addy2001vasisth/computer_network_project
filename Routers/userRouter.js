@@ -1,81 +1,77 @@
 const express = require("express");
+// const protectRoute = require("./authHelper");
 const userRouter = express.Router();
-const multer=require('multer');
-// const protectRoute=require('./authHelper');
-const {getUser,getAllUser,updateUser,deleteUser,updateProfileImage}=require('../controller/userController');
-const{signup,login,isAuthorised,protectRoute,forgetpassword,resetpassword,logout}=require('../controller/authController');
+const {
+  getUser,
+  getAllUser,
+  patchUser,
+  deleteUser,
+  updateProfileImage,
+} = require("../controller/userController");
+const { append } = require("express/lib/response");
+const {
+  signup,
+  login,
+  isAuthorised,
+  protectRoute,
+  forgotPassword,
+  resetPassword,
+  logout,
+} = require("../controller/authController");
+// const { filter } = require("lodash");
+const multer = require("multer");
 
-// user ke options 
-userRouter.route('/:id')
-.patch(updateUser)
-.delete(deleteUser)
-
+// user's options
 userRouter
-.route('/signup')
-.post(signup)
+  .route("/:id")
+  // .get(getuserId)
+  .patch(patchUser)
+  .delete(deleteUser);
 
-userRouter
-.route('/login')
-.post(login)
+userRouter.route("/signup").post(signup);
 
-userRouter
-.route('/forgetpassword')
-.post(forgetpassword)
-
-userRouter
-.route('/resetpassword/:token')
-.post(resetpassword)
-
-userRouter
-.route('/logout')
-.get(logout)
-
-
-//multer for fileupload
-
-// upload-> storage , filter
-const multerStorage=multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,'public/images')
-    },
-    filename:function(req,file,cb){
-        cb(null,`user-${Date.now()}.jpeg`)
-    }
+userRouter.route("/login").post(login);
+// multer for the fileupload
+// upload --> storage, filter
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, `user-${Date.now()}.jpeg`);
+  },
 });
 
 const filter = function (req, file, cb) {
-    if (file.mimetype.startsWith("image")) {
-      cb(null, true)
-    } else {
-      cb(new Error("Not an Image! Please upload an image"), false)
-    }
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Not an Image! Please upload a valid image"), false);
   }
-
+};
 const upload = multer({
-    storage: multerStorage,
-    fileFilter: filter
-  });
+  storage: multerStorage,
+  fileFilter: filter,
+});
 
-  userRouter.post("/ProfileImage", upload.single('photo') ,updateProfileImage);
-  //get request
-  userRouter.get('/ProfileImage',(req,res)=>{
-      res.sendFile("/Users/abhishekgoel/Desktop/practiceBackend/foodApp/multer.html");
-  });
+userRouter.post("/ProfileImage", upload.single("photo"), updateProfileImage);
 
-//profile page 
+//get request
+userRouter.get("/ProfileImage", (req, res) => {
+  res.sendFile("D:\\learning web development\\backend\\foodApp\\multer.html");
+});
+//profile page
 userRouter.use(protectRoute);
-userRouter
-.route('/userProfile')
-.get(getUser)
+userRouter.route("/userProfile").get(getUser);
 
+// admin specific functions
+userRouter.use(isAuthorised(["admin"]));
+userRouter.route("/").get(getAllUser);
 
-// admin specific func
-userRouter.use(isAuthorised(['admin']));
-userRouter
-.route('/')
-.get(getAllUser)
+userRouter.route("/forgotPassword").post(forgotPassword);
 
+userRouter.route("/resetPassword/:token").post(resetPassword);
 
+userRouter.route("/logout").get(logout);
 
-
-module.exports=userRouter;
+module.exports = userRouter;

@@ -1,29 +1,32 @@
 const express = require("express");
 const planRouter = express.Router();
-const{protectRoute, isAuthorised}=require('../controller/authController');
-const{getPlan,getAllPlans,createPlan,updatePlan,deletePlan,top3Plans}=require('../controller/planController');
+const { protectRoute, isAuthorised } = require("../controller/authController");
 
-//all plans leke aayega 
-planRouter.route('/allPlans')
-.get(getAllPlans)
+const {
+  getPlan,
+  getAllPlans,
+  createPlan,
+  updatePlan,
+  deletePlan,
+  top3Plans,
+} = require("../controller/planController");
+// all plans
+planRouter.route("/allPlans").get(getAllPlans);
 
-planRouter.route('/top3').get(top3Plans)
-
-//own plan -> logged in necessary 
 planRouter.use(protectRoute);
-planRouter.route('/plan/:id')
-.get(getPlan);
+planRouter.route("/plan/:id").get(getPlan);
 
-
-// admin nd restaurant owner can only create,update or delte plans 
-planRouter.use(isAuthorised(['admin','restaurantowner']));
+planRouter.use(isAuthorised(["admin", "restaurantowner"]));
 planRouter
-.route('/crudPlan')
-.post(createPlan);
+  .route("/crudPlan")
+  .post(createPlan)
+  
+planRouter
+  .route("/crudPlan/:id")
+  .patch(updatePlan)
+  .delete(deletePlan);
 
 planRouter
-.route('/crudPlan/:id')
-.patch(updatePlan)
-.delete(deletePlan)
-
-module.exports=planRouter;
+  .route("/top3")
+  .get(top3Plans)
+module.exports = planRouter;
