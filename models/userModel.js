@@ -1,56 +1,58 @@
 //mongoDB
-const mongoose=require('mongoose');
-const emailValidator=require('email-validator');
-const bcrypt=require('bcrypt');
-const crypto=require('crypto');
-const db_link='mongodb+srv://admin:xnDx4jlj5mmzjiVE@cluster0.3irmz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-mongoose.connect(db_link)
-.then(function(db){
-  // console.log(db);
-  console.log('user db connected');
-})
-.catch(function(err){
-  console.log(err);
-});
+const mongoose = require("mongoose");
+const emailValidator = require("email-validator");
+const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const db_link =
+  "mongodb+srv://admin:ertSzx3I70MpPHYf@cluster0.otpnp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+mongoose
+  .connect(db_link)
+  .then(function (db) {
+    // console.log(db);
+    console.log("user db connected");
+  })
+  .catch(function (err) {
+    console.log(err);
+  });
 
-const userSchema=mongoose.Schema({
-  name:{
-    type:String,
-    required:true
+const userSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  email:{
-    type:String,
-    required:true,
-    unique:true,
-    validate:function(){
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: function () {
       return emailValidator.validate(this.email);
-    }
+    },
   },
-  password:{
-    type:String,
-    required:true,
-    minLength:8
+  password: {
+    type: String,
+    required: true,
+    minLength: 8,
   },
-  confirmPassword:{
-    type:String,
-    required:true,
-    minLength:8,
-    validate:function(){
-      return this.confirmPassword==this.password
-    }
+  confirmPassword: {
+    type: String,
+    required: true,
+    minLength: 8,
+    validate: function () {
+      return this.confirmPassword == this.password;
+    },
   },
-  role:{
-    type:String,
-    enum:['admin','user','restaurantowner','deliveryboy'],
-    default:'user'
+  role: {
+    type: String,
+    enum: ["admin", "user", "restaurantowner", "deliveryboy"],
+    default: "user",
   },
-  profileImage:{
-    type:String,
-    default:'../Images/UserIcon.png'
+  profileImage: {
+    type: String,
+    default: "../Images/UserIcon.png",
   },
-  resetToken:String
+  resetToken: String,
 });
-//pre post hooks 
+//pre post hooks
 //after save event occurs in db
 // userSchema.post('save',function(doc){
 //   console.log('after saving in db',doc);
@@ -63,9 +65,8 @@ const userSchema=mongoose.Schema({
 
 //remove - explore on own
 
-
-userSchema.pre('save',function(){
-  this.confirmPassword=undefined;
+userSchema.pre("save", function () {
+  this.confirmPassword = undefined;
 });
 
 // userSchema.pre('save',async function(){
@@ -74,23 +75,21 @@ userSchema.pre('save',function(){
 //     this.password=hashedString;
 // })
 
-userSchema.methods.createResetToken=function(){
+userSchema.methods.createResetToken = function () {
   //creating unique token using npm i crypto
-  const resetToken=crypto.randomBytes(32).toString("hex");
-  this.resetToken=resetToken;
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.resetToken = resetToken;
   return resetToken;
-}
+};
 
-userSchema.methods.resetPasswordHandler=function(password,confirmPassword){
-  this.password=password;
-  this.confirmPassword=confirmPassword;
-  this.resetToken=undefined;
-}
-
-
+userSchema.methods.resetPasswordHandler = function (password, confirmPassword) {
+  this.password = password;
+  this.confirmPassword = confirmPassword;
+  this.resetToken = undefined;
+};
 
 // model
-const userModel=mongoose.model('userModel',userSchema);
-module.exports=userModel;
+const userModel = mongoose.model("userModel", userSchema);
+module.exports = userModel;
 
 // (async function createUser(){
